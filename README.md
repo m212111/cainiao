@@ -1,6 +1,6 @@
 # 📦 智能快递驿站管理系统（仿菜鸟驿站）
 
- 本项目是一个模拟 **菜鸟驿站快递管理系统** 的全栈应用，涵盖前端快递员操作界面、扫码出库系统、后端身份验证及包裹管理逻辑。  
+ 本项目是一个模拟 **菜鸟驿站快递管理系统** 的全栈应用，涵盖前端用户操作界面、扫码出库系统、后端身份验证及包裹管理逻辑。  
  This project was developed as part of the graduation design for YunCheng Vocational And Technical University.
 
 
