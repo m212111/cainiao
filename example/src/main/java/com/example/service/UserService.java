@@ -6,12 +6,11 @@ import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 public class UserService {
-    private List<User> users = new CopyOnWriteArrayList<>();
-    private Map<String, User> userMap = new HashMap<>();
+    private List<User> users = new ArrayList<>();
+
     /**
      * 用户服务类，提供用户注册、登录、查询等功能。
      * @author wzy
@@ -22,7 +21,6 @@ public class UserService {
         users.add(new User("admin", "123456", "admin", "null"));
         users.add(new User("1", "1", "user", "SFM12323001"));
         users.add(new User("2", "2", "user", "SFM12323002"));
-        users.forEach(u -> userMap.put(u.getUsername(), u));
         System.out.println("[用户初始化完成] 用户列表：");
         users.forEach(u -> System.out.println("- " + u.getUsername() + " / " + u.getRole()));
     }
@@ -33,13 +31,12 @@ public class UserService {
         }
         User newUser = new User(username, password, "user", identityCode);
         users.add(newUser);
-        userMap.put(username, newUser);
         System.out.println("[注册成功] 用户：" + username);
         return true;
     }
 
     public String login(String username, String password) {
-        User user = userMap.get(username);
+        User user = getUserByUsername(username);
         if (user != null && user.getPassword().equals(password)) {
             String token = TokenUtil.generateToken(username);
             System.out.println("[登录成功] 用户：" + username);
@@ -49,23 +46,28 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        return userMap.get(username);
+        for (User u : users) {
+            if (u.getUsername().equals(username)) {
+                return u;
+            }
+        }
+        return null;
     }
 
     public User getUserByIdentityCode(String identityCode) {
         for (User u : users) {
-            if (u.getIdentityCode().equals(identityCode)) return u;
+            if (u.getIdentityCode().equals(identityCode)) {
+                return u;
+            }
         }
         return null;
     }
+
     public String getIdentityCodeByUsername(String username) {
-        for (User u : users) {
-            if (u.getUsername().equals(username)) { // 根据用户名匹配用户
-                return u.getIdentityCode(); // 返回对应的身份码
-            }
-        }
-        return null; // 如果未找到用户，返回 null
+        User user = getUserByUsername(username);
+        return user != null ? user.getIdentityCode() : null;
     }
+
     public List<User> getAllUsers() {
         return users;
     }
@@ -78,13 +80,10 @@ public class UserService {
                 return false;
             }
             users.remove(user);
-            userMap.remove(username);
             System.out.println("[删除用户成功] 用户：" + username);
             return true;
         }
         System.out.println("[删除用户失败] 用户：" + username + " 不存在！");
         return false;
     }
-
-
 }
