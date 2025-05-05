@@ -4,8 +4,8 @@ import com.example.entity.PackageInfo;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+
 /**
  * 提供与包裹相关的服务，包括添加包裹、查询包裹、更新状态和删除包裹等功能。
  * 该服务管理所有包裹信息，包括根据接收者用户名、包裹 ID 等查询包裹，并支持取件和包裹状态更新。
@@ -51,52 +51,55 @@ public class PackageService {
         return false;
     }
 
+
+
     /**
      * 管理员实现
+     * 提供快递的查询、状态更新与删除等功能
      *
      * @author wzy
      * @since 2025-05-01
      */
-    // 获取所有快递
     public List<PackageInfo> getAllPackages() {
-        return packages;
+        return new ArrayList<>(packages);
     }
 
     // 更新快递的取件状态
     public boolean updatePackageStatus(String id, boolean isPickedUp) {
-        for (PackageInfo p : packages) {
-            if (p.getId().equals(id)) {
-                p.setPickedUp(isPickedUp);
-                System.out.println("[更新状态成功] 快递：" + id + " 取件状态：" + (isPickedUp ? "已取件" : "未取件"));
-                return true;
-            }
+        Optional<PackageInfo> optionalPackage = packages.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
+
+        if (optionalPackage.isPresent()) {
+            optionalPackage.get().setPickedUp(isPickedUp);
+            System.out.println("[更新状态成功] 快递：" + id + " 取件状态：" + (isPickedUp ? "已取件" : "未取件"));
+            return true;
         }
+
         return false;
     }
 
     // 删除快递
     public boolean deletePackage(String id) {
-        PackageInfo packageToDelete = null;
-        for (PackageInfo p : packages) {
-            if (p.getId().equals(id)) {
-                packageToDelete = p;
-                break;
-            }
-        }
-        if (packageToDelete != null) {
-            packages.remove(packageToDelete);
+        Optional<PackageInfo> optionalPackage = packages.stream()
+                .filter(p -> p.getId().equals(id))
+                .findFirst();
+
+        if (optionalPackage.isPresent()) {
+            packages.remove(optionalPackage.get());
             System.out.println("[删除快递成功] 快递：" + id);
             return true;
         }
+
         System.out.println("[删除快递失败] 快递：" + id + " 不存在");
         return false;
     }
 
+    // 根据 ID 获取快递信息
     public PackageInfo getById(String id) {
         return packages.stream()
                 .filter(p -> p.getId().equals(id))
                 .findFirst()
                 .orElse(null);
     }
-
 }
