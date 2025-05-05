@@ -46,35 +46,38 @@ public class UserService {
     }
 
     public User getUserByUsername(String username) {
-        for (User u : users) {
-            if (u.getUsername().equals(username)) {
-                return u;
-            }
-        }
-        return null;
+        return users.stream()
+                .filter(u -> u.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
     }
 
     public User getUserByIdentityCode(String identityCode) {
-        for (User u : users) {
-            if (u.getIdentityCode().equals(identityCode)) {
-                return u;
-            }
-        }
-        return null;
+        return users.stream()
+                .filter(u -> u.getIdentityCode().equals(identityCode))
+                .findFirst()
+                .orElse(null);
     }
 
     public String getIdentityCodeByUsername(String username) {
-        User user = getUserByUsername(username);
-        return user != null ? user.getIdentityCode() : null;
+        return users.stream()
+                .filter(u -> u.getUsername().equals(username))
+                .map(User::getIdentityCode)
+                .findFirst()
+                .orElse(null);
     }
 
     public List<User> getAllUsers() {
-        return users;
+        return new ArrayList<>(users);
     }
 
     public boolean deleteUser(String username) {
-        User user = getUserByUsername(username);
-        if (user != null) {
+        Optional<User> optionalUser = users.stream()
+                .filter(u -> u.getUsername().equals(username))
+                .findFirst();
+
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             if ("admin".equals(user.getRole())) {
                 System.out.println("[删除用户失败] 管理员用户无法删除！");
                 return false;
