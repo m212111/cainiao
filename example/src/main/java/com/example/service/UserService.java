@@ -72,21 +72,24 @@ public class UserService {
     }
 
     public boolean deleteUser(String username) {
-        Optional<User> optionalUser = users.stream()
+        User user = users.stream()
                 .filter(u -> u.getUsername().equals(username))
-                .findFirst();
+                .findFirst()
+                .orElse(null);
 
-        if (optionalUser.isPresent()) {
-            User user = optionalUser.get();
-            if ("admin".equals(user.getRole())) {
-                System.out.println("[删除用户失败] 管理员用户无法删除！");
-                return false;
-            }
-            users.remove(user);
-            System.out.println("[删除用户成功] 用户：" + username);
-            return true;
+        if (user == null) {
+            System.out.println("[删除用户失败] 用户：" + username + " 不存在！");
+            return false;
         }
-        System.out.println("[删除用户失败] 用户：" + username + " 不存在！");
-        return false;
+
+        if ("admin".equals(user.getRole())) {
+            System.out.println("[删除用户失败] 管理员用户无法删除！");
+            return false;
+        }
+
+        users.remove(user);
+        System.out.println("[删除用户成功] 用户：" + username);
+        return true;
     }
+
 }
