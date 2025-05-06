@@ -47,11 +47,12 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { ElMessage } from 'element-plus';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/user'; // <-- 引入 Pinia 状态管理
+import { useUserStore } from '@/stores/user';
 import axios from 'axios';
+
 const router = useRouter();
 const userStore = useUserStore();
 
@@ -67,7 +68,7 @@ const login = async () => {
     const { type, message, token: receivedToken } = response.data;
 
     if (type === 'success') {
-      userStore.login(form.value.username, receivedToken); // <-- 使用 Pinia 更新状态
+      userStore.login(form.value.username, receivedToken);
       ElMessage.success(message || '登录成功');
       router.push('/home');
     } else {
@@ -78,6 +79,21 @@ const login = async () => {
     ElMessage.error('网络或服务器错误，请稍后重试');
   }
 };
+
+// 修复移动端 100vh 滑动空白问题
+const setVh = () => {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+};
+
+onMounted(() => {
+  setVh();
+  window.addEventListener('resize', setVh);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', setVh);
+});
 </script>
 
 <style scoped>
@@ -98,12 +114,13 @@ section {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100); /* 替代100vh */
   background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
   background-size: 400% 400%;
   animation: gradient 10s ease infinite;
+  overflow: hidden;
 }
-
 @keyframes gradient {
   0% {
     background-position: 0% 50%;
