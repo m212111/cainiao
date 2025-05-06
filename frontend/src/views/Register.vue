@@ -39,7 +39,7 @@
   </template>
   
   <script setup>
-import { ref } from 'vue';
+import { ref,onMounted, onBeforeUnmount } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage } from 'element-plus';
 import axios from 'axios';
@@ -69,6 +69,20 @@ const register = async () => {
     console.error('注册错误:', error);
   }
 };
+
+const setVh = () => {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+};
+
+onMounted(() => {
+  setVh();
+  window.addEventListener('resize', setVh);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', setVh);
+});
 </script>
 
   
@@ -87,15 +101,16 @@ const register = async () => {
   }
   
   section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient 10s ease infinite;
-  }
-  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: calc(var(--vh, 1vh) * 100); /* 替代100vh */
+  background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  background-size: 400% 400%;
+  animation: gradient 10s ease infinite;
+  overflow: hidden;
+}
   @keyframes gradient {
     0% {
       background-position: 0% 50%;
