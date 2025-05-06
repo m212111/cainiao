@@ -29,7 +29,7 @@ export default {
     
     const fetchUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/admin/users");
+        const response = await axios.get("/api/admin/users");
         users.value = response.data;
       } catch (error) {
         console.error("获取用户失败:", error);
