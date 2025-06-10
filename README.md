@@ -2,7 +2,7 @@
 
  本项目是一个模拟 **菜鸟驿站快递管理系统** 的全栈应用，涵盖前端用户操作界面、扫码出库系统、后端身份验证及包裹管理逻辑。  
  This project was developed as part of the graduation design for YunCheng Vocational And Technical University.
-
+New Version with SQL https://www.123684.com/s/PJAgjv-wz7Kv
 
 ## 🧩 技术栈
 
